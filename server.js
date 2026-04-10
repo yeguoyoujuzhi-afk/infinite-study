@@ -32,8 +32,16 @@ app.post('/api/diagnose', async (req, res) => {
             }
         );
 
+        // 👇 新增：打印扣子官方的真实底层回应！
+        console.log("🔍 扣子真实回应:", JSON.stringify(response.data));
+
+        // 👇 新增：如果扣子的 code 不是 0，说明被扣子拒绝了，直接把扣子的原话传给前端！
+        if (response.data.code !== 0) {
+            console.error("❌ 扣子拒绝了请求:", response.data.msg);
+            return res.json({ success: false, message: `扣子官方报错: ${response.data.msg}` });
+        }
+
         console.log("✅ 大模型精算完成，正在返回数据...");
-        // 把工作流的输出结果传给前端
         res.json({ success: true, data: response.data.data });
 
     } catch (error) {
