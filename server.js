@@ -42,7 +42,7 @@ app.post('/api/diagnose', async (req, res) => {
     }
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`🚀 Infinite Study 后端引擎已成功点火！运行在 http://localhost:${PORT}`);
 });
