@@ -4,136 +4,41 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Infinite Study | 多模态诊断工作台</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+        /* ... 保留之前的全部基础 CSS ... */
         :root {
             --primary-color: #4F46E5;
             --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4ebf5 100%);
             --card-bg: rgba(255, 255, 255, 0.85);
         }
-        
-        body {
-            margin: 0; padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif;
-            background: var(--bg-gradient);
-            background-size: 400% 400%;
-            animation: gradientBG 15s ease infinite;
-            min-height: 100vh;
-            display: flex; 
-            align-items: center; 
-            justify-content: center;
-            color: #333; 
-            overflow-x: hidden;
-        }
-
-        /* 核心分屏容器 */
-        .split-layout {
-            display: flex;
-            width: 90%;
-            max-width: 1400px;
-            gap: 4rem;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        /* ================= 左侧：品牌展示区 ================= */
-        .left-hero {
-            flex: 1;
-            display: flex;
-            justify-content: center;
-        }
-
-        .hero-container {
-            text-align: center;
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            padding: 4rem 3rem;
-            border-radius: 30px;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
-            border: 1px solid rgba(255, 255, 255, 0.8);
-            width: 100%;
-            max-width: 550px;
-            animation: floatUp 1s ease-out forwards;
-        }
-
-        h1 {
-            font-size: 3.5rem; margin-bottom: 1rem; margin-top: 0;
-            background: linear-gradient(to right, #4F46E5, #ec4899);
-            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            font-weight: 800; letter-spacing: -1px;
-        }
-
+        body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif; background: var(--bg-gradient); background-size: 400% 400%; animation: gradientBG 15s ease infinite; min-height: 100vh; display: flex; align-items: center; justify-content: center; color: #333; overflow-x: hidden; }
+        .split-layout { display: flex; width: 90%; max-width: 1400px; gap: 4rem; align-items: center; justify-content: space-between; }
+        .left-hero { flex: 1; display: flex; justify-content: center; }
+        .hero-container { text-align: center; background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(15px); padding: 4rem 3rem; border-radius: 30px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1); border: 1px solid rgba(255, 255, 255, 0.8); width: 100%; max-width: 550px; animation: floatUp 1s ease-out forwards; }
+        h1 { font-size: 3.5rem; margin-bottom: 1rem; margin-top: 0; background: linear-gradient(to right, #4F46E5, #ec4899); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-weight: 800; letter-spacing: -1px; }
         .subtitle { font-size: 1.15rem; color: #555; line-height: 1.8; margin-bottom: 2.5rem; }
-
         .features { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
-
-        .feature-tag {
-            background: white; padding: 0.6rem 1.2rem; border-radius: 50px;
-            font-size: 0.9rem; font-weight: 600; color: var(--primary-color);
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(79, 70, 229, 0.1);
-        }
-
-        /* ================= 右侧：交互工作台 ================= */
-        .right-workspace {
-            flex: 1.2;
-            display: flex;
-            flex-direction: column;
-            gap: 1.2rem;
-            max-width: 650px;
-            animation: floatUp 1.2s ease-out forwards;
-        }
-
-        .workspace-header h2 {
-            margin: 0 0 0.5rem 0;
-            font-size: 1.8rem;
-            color: #1f2937;
-        }
+        .feature-tag { background: white; padding: 0.6rem 1.2rem; border-radius: 50px; font-size: 0.9rem; font-weight: 600; color: var(--primary-color); box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05); border: 1px solid rgba(79, 70, 229, 0.1); }
+        .right-workspace { flex: 1.2; display: flex; flex-direction: column; gap: 1.2rem; max-width: 650px; animation: floatUp 1.2s ease-out forwards; }
+        .workspace-header h2 { margin: 0 0 0.5rem 0; font-size: 1.8rem; color: #1f2937; }
         .workspace-header p { margin: 0; color: #6b7280; font-size: 1rem; }
-
-        .input-card {
-            background: var(--card-bg);
-            backdrop-filter: blur(10px);
-            padding: 1.5rem;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.6);
-            transition: transform 0.2s;
-        }
+        .input-card { background: var(--card-bg); backdrop-filter: blur(10px); padding: 1.5rem; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); border: 1px solid rgba(255, 255, 255, 0.6); transition: transform 0.2s; }
         .input-card:hover { transform: translateY(-2px); }
-
         .input-card h3 { margin: 0 0 1rem 0; font-size: 1.05rem; color: #374151; display: flex; align-items: center; gap: 8px;}
-        
-        .input-card input, .input-card textarea {
-            width: 100%; padding: 0.8rem;
-            border: 1px solid #d1d5db; border-radius: 8px;
-            font-size: 0.95rem; box-sizing: border-box;
-            font-family: inherit; outline: none;
-            transition: border-color 0.2s;
-            background: rgba(255, 255, 255, 0.9);
-        }
-        .input-card input:focus, .input-card textarea:focus { 
-            border-color: var(--primary-color); 
-            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
-        }
+        .input-card input[type="text"], .input-card textarea { width: 100%; padding: 0.8rem; border: 1px solid #d1d5db; border-radius: 8px; font-size: 0.95rem; box-sizing: border-box; font-family: inherit; outline: none; background: rgba(255, 255, 255, 0.9); }
         .input-card textarea { resize: vertical; min-height: 70px; }
-
-        .btn-submit {
-            background: linear-gradient(to right, #4F46E5, #6366f1);
-            color: white; border: none; padding: 1.2rem 2rem;
-            font-size: 1.1rem; font-weight: bold; border-radius: 50px;
-            cursor: pointer; width: 100%; margin-top: 0.5rem;
-            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
-            transition: all 0.3s;
-        }
-        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 20px -3px rgba(79, 70, 229, 0.4); }
-
-        /* 动画定义 */
+        .btn-submit { background: linear-gradient(to right, #4F46E5, #6366f1); color: white; border: none; padding: 1.2rem 2rem; font-size: 1.1rem; font-weight: bold; border-radius: 50px; cursor: pointer; width: 100%; margin-top: 0.5rem; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3); transition: all 0.3s; position: relative; overflow: hidden;}
+        .pdf-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
         @keyframes floatUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
         
-        /* 结果卡片悬浮效果 */
-        .pdf-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+        /* 图片上传按钮美化 */
+        .file-upload-wrapper { margin-bottom: 10px; display: flex; align-items: center; gap: 10px; }
+        .file-upload-btn { background: #f3f4f6; border: 1px dashed #9ca3af; padding: 8px 16px; border-radius: 8px; cursor: pointer; color: #4b5563; font-size: 0.9rem; transition: 0.2s;}
+        .file-upload-btn:hover { background: #e5e7eb; border-color: #4F46E5; color: #4F46E5;}
+        input[type="file"] { display: none; }
+        #file-name { font-size: 0.85rem; color: #10b981; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -159,7 +64,7 @@
 
             <div class="input-card">
                 <h3>📝 1. 五维问卷数据</h3>
-                <input type="text" id="val_options" placeholder="例：1A 2C 3D 4B 5C 6B..." autocomplete="off">
+                <input type="text" id="val_options" placeholder="例：1B 2C 3A 4D 5C 6B..." autocomplete="off">
             </div>
 
             <div class="input-card">
@@ -168,98 +73,147 @@
             </div>
 
             <div class="input-card">
-                <h3>🎯 3. 错题靶向描述 (手打版)</h3>
-                <textarea id="val_wrong_question" placeholder="如有图片可留空。如有文字描述请在此输入..."></textarea>
+                <h3>🎯 3. 错题靶向描述 (图文双驱版)</h3>
+                <div class="file-upload-wrapper">
+                    <label class="file-upload-btn">
+                        <input type="file" id="img-upload" accept="image/*" onchange="showFileName()">
+                        📎 补充错题图片 (可选)
+                    </label>
+                    <span id="file-name"></span>
+                </div>
+                <textarea id="val_wrong_question" placeholder="如有文字补充描述请在此输入..."></textarea>
             </div>
 
-            <button class="btn-submit" onclick="generateAndCopy()">🚀 一键打包数据并呼叫大脑</button>
+            <button class="btn-submit" id="main-btn" onclick="generateAndCopy()">🚀 一键打包数据并呼叫大脑</button>
             
             <div id="report-showcase" style="display: none; margin-top: 10px; padding: 24px; background: rgba(255,255,255,0.9); border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); animation: floatUp 0.5s ease-out forwards;">
                 <h3 style="color: #0f172a; margin-top: 0; font-size: 18px; display: flex; align-items: center; gap: 8px;">
                     🎉 专属跃迁蓝图生成完毕
                 </h3>
-                <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">多模态引擎精算成功，请分发以下高管级交付物：</p>
+                
+                <div style="width: 100%; max-width: 300px; margin: 0 auto 20px auto;">
+                    <canvas id="radarChart"></canvas>
+                </div>
+
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 20px; text-align: center;">多模态引擎精算成功，请分发以下交付物：</p>
                 
                 <div style="display: flex; gap: 12px;">
-                    <a id="link-par" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #4F46E5, #6366f1); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);">👪 家长版蓝图</a>
-                    
-                    <a id="link-stu" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #10B981, #34d399); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);">🧑‍🎓 学生版指南</a>
-                    
-                    <a id="link-tea" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #F59E0B, #fbbf24); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);">👨‍🏫 教师版 SOP</a>
+                    <a id="link-par" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #4F46E5, #6366f1); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s;">👪 家长版蓝图</a>
+                    <a id="link-stu" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #10B981, #34d399); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s;">🧑‍🎓 学生版指南</a>
+                    <a id="link-tea" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #F59E0B, #fbbf24); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s;">👨‍🏫 教师版 SOP</a>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // ImgBB API 密钥 (去 api.imgbb.com 免费申请)
+        const IMGBB_API_KEY = "730cfd39f0a7f054d4bb33b3732953af"; 
+        
+        // 显示文件名小交互
+        function showFileName() {
+            const fileInput = document.getElementById('img-upload');
+            if(fileInput.files.length > 0) {
+                document.getElementById('file-name').innerText = "✅ 已选择图片: " + fileInput.files[0].name;
+            }
+        }
+
+        // 上传图片到图床，换取 URL
+        async function uploadImageToImgBB(file) {
+            const formData = new FormData();
+            formData.append("image", file);
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
+                method: "POST",
+                body: formData
+            });
+            const data = await response.json();
+            if(data.success) return data.data.url;
+            throw new Error("图片上传图床失败");
+        }
+
         async function generateAndCopy() {
             const options = document.getElementById('val_options').value.trim();
             const interview = document.getElementById('val_interview').value.trim();
             const wrongQuestion = document.getElementById('val_wrong_question').value.trim();
+            const fileInput = document.getElementById('img-upload');
 
-            if(!options && !interview && !wrongQuestion) {
+            if(!options && !interview && !wrongQuestion && fileInput.files.length === 0) {
                 alert("⚠️ 请至少输入一项学情数据！");
                 return;
             }
 
-            const btn = document.querySelector('.btn-submit');
+            const btn = document.getElementById('main-btn');
             const showcase = document.getElementById('report-showcase');
-            const originalText = btn.innerText;
             
-            // 改变按钮状态为加载中，同时隐藏之前的卡片
-            btn.innerText = "⏳ 引擎全功率运转中 (约需15-30秒)...";
+            // 酷炫轮播加载文字，化解2分钟焦虑
+            const loadingTexts = [
+                "⏳ 正在提取 CV 视觉特征...",
+                "⏳ 正在融合五维基线数据...",
+                "🧠 触发工作记忆过载分析引擎...",
+                "⚡️ 三核智能体独立并发推演中...",
+                "⚙️ 正在生成高管级 Markdown 排版...",
+                "🚀 物理隔离渲染 PDF 文件中 (即将完成)..."
+            ];
+            let textIndex = 0;
             btn.disabled = true;
-            btn.style.opacity = "0.7";
+            btn.style.opacity = "0.8";
             showcase.style.display = "none";
+            
+            const textInterval = setInterval(() => {
+                btn.innerText = loadingTexts[textIndex];
+                textIndex = (textIndex + 1) % loadingTexts.length;
+            }, 15000); // 每 15 秒换一句极客风提示语
 
             try {
-                // 注意：这里的 URL 已经改为了根目录请求。
-                // 只要你把它放到 public 文件夹上传到 Glitch，它就会自动去请求同域名下的后端 API。
+                // 1. 如果有图片，先秒传图床换链接！
+                let imageUrl = "";
+                if(fileInput.files.length > 0) {
+                    btn.innerText = "⏳ 正在上传错题图像至云端...";
+                    imageUrl = await uploadImageToImgBB(fileInput.files[0]);
+                }
+
+                // 2. 将图片链接拼接到错题描述里传给后端（后端再传给扣子）
+                const finalWrongQuestion = imageUrl ? `[错题原件图](${imageUrl})\n补充描述：${wrongQuestion}` : wrongQuestion;
+
+                // 3. 呼叫后端服务器
                 const response = await fetch('/api/diagnose', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        options: options, 
-                        interview: interview, 
-                        wrong_question: wrongQuestion 
-                    })
+                    body: JSON.stringify({ options, interview, wrong_question: finalWrongQuestion })
                 });
 
                 const result = await response.json();
 
-              if(result.success) {
-                    if (!result.data) {
-                        alert("⚠️ 收到来自大模型的空数据！");
-                        return;
-                    }
-
-                    // 1. 拆开扣子送来的“大包裹”长文
+                if(result.success) {
+                    if (!result.data) { alert("⚠️ 收到空数据！"); return; }
+                    
                     let outputText = "";
                     try {
                         const parsed = JSON.parse(result.data);
                         outputText = parsed.data || result.data; 
-                    } catch (e) {
-                        outputText = result.data; 
-                    }
+                    } catch (e) { outputText = result.data; }
 
-                    // 2. 开启“正则雷达”，精准扫描长文末尾的 3 个 PDF 网址！
+                    // --- 神级操作 1：正则提取 5 维数据画雷达图 ---
+                    const focus = parseInt(outputText.match(/专注力[：:]\s*(\d+)/)?.[1]) || 50;
+                    const method = parseInt(outputText.match(/学习方法[：:]\s*(\d+)/)?.[1]) || 50;
+                    const target = parseInt(outputText.match(/目标感[：:]\s*(\d+)/)?.[1]) || 50;
+                    const emotion = parseInt(outputText.match(/情绪管理[：:]\s*(\d+)/)?.[1]) || 50;
+                    const action = parseInt(outputText.match(/执行力[：:]\s*(\d+)/)?.[1]) || 50;
+
+                    drawRadarChart([focus, method, target, emotion, action]);
+
+                    // --- 神级操作 2：提取 PDF 链接 ---
                     const stuMatch = outputText.match(/\[.*?学生版.*?\]\((https:\/\/[^\)]+)\)/);
                     const teaMatch = outputText.match(/\[.*?教师版.*?\]\((https:\/\/[^\)]+)\)/);
                     const parMatch = outputText.match(/\[.*?家长版.*?\]\((https:\/\/[^\)]+)\)/);
 
-                    // 3. 提取链接
-                    const stuPdf = stuMatch ? stuMatch[1] : null;
-                    const teaPdf = teaMatch ? teaMatch[1] : null;
-                    const parPdf = parMatch ? parMatch[1] : null;
-
-                    if(!parPdf || !stuPdf || !teaPdf) {
-                        alert("⚠️ 引擎运算完毕，但未能提取到有效的 PDF 链接。请按 F12 看控制台。");
-                        console.log("扣子返回的长文原文是：", outputText);
+                    if(!stuMatch || !teaMatch || !parMatch) {
+                        alert("⚠️ 引擎运算完毕，但未能全部提取 PDF 链接。");
+                        console.log("原文：", outputText);
                     } else {
-                        // 4. 完美填入按钮，并华丽弹出展示区！
-                        document.getElementById('link-par').href = parPdf;
-                        document.getElementById('link-stu').href = stuPdf;
-                        document.getElementById('link-tea').href = teaPdf;
+                        document.getElementById('link-par').href = parMatch[1];
+                        document.getElementById('link-stu').href = stuMatch[1];
+                        document.getElementById('link-tea').href = teaMatch[1];
                         showcase.style.display = "block";
                     }
                 } else {
@@ -267,14 +221,43 @@
                 }
 
             } catch (error) {
-                console.error("前端错误捕获：", error);
-                alert("⚠️ 网络通信中断，请检查服务器连接。");
+                console.error(error);
+                alert("⚠️ 网络超时或断开连接。");
             } finally {
-                // 恢复按钮的原始状态
-                btn.innerText = originalText;
+                clearInterval(textInterval);
+                btn.innerText = "🚀 一键打包数据并呼叫大脑";
                 btn.disabled = false;
                 btn.style.opacity = "1";
             }
+        }
+
+        // 画雷达图函数
+        let myRadarChart = null;
+        function drawRadarChart(dataArray) {
+            const ctx = document.getElementById('radarChart').getContext('2d');
+            if (myRadarChart) myRadarChart.destroy(); // 每次生成前销毁旧图
+            
+            myRadarChart = new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['专注力', '学习方法', '目标感', '情绪管理', '执行力'],
+                    datasets: [{
+                        label: '能力基线得分',
+                        data: dataArray,
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                        borderColor: 'rgba(79, 70, 229, 1)',
+                        pointBackgroundColor: 'rgba(236, 72, 153, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(236, 72, 153, 1)',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    scales: { r: { angleLines: { display: true }, suggestedMin: 0, suggestedMax: 100 } },
+                    plugins: { legend: { display: false } }
+                }
+            });
         }
     </script>
 </body>
