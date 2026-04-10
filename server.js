@@ -9,6 +9,7 @@ app.use(express.json());
 app.use(express.static('public')); // 让后端把 public 里的网页暴露出去
 
 // 核心诊断接口
+// 核心诊断接口
 app.post('/api/diagnose', async (req, res) => {
     try {
         console.log("📥 收到前端请求，正在呼叫大模型...");
@@ -17,7 +18,10 @@ app.post('/api/diagnose', async (req, res) => {
         const response = await axios.post(
             'https://api.coze.cn/v1/workflow/run',
             {
-                workflow_id: process.env.WORKFLOW_ID,
+                // 【修复点 1】直接写死工作流 ID，彻底避开 Render 环境变量读取失败的坑
+                workflow_id: process.env.WORKFLOW_ID || "7624431700663238710",
+                // 【修复点 2】强制补全 bot_id！满足扣子插件和智能体绑定的硬性要求
+                bot_id: "7624357703825440795",
                 parameters: {
                     options: options || "",
                     interview: interview || "",
@@ -32,13 +36,12 @@ app.post('/api/diagnose', async (req, res) => {
             }
         );
 
-        // 👇 新增：打印扣子官方的真实底层回应！
         console.log("🔍 扣子真实回应:", JSON.stringify(response.data));
 
-        // 👇 新增：如果扣子的 code 不是 0，说明被扣子拒绝了，直接把扣子的原话传给前端！
+        // 如果扣子的 code 不是 0，说明被拒绝了
         if (response.data.code !== 0) {
             console.error("❌ 扣子拒绝了请求:", response.data.msg);
-            return res.json({ success: false, message: `扣子官方报错: ${response.data.msg}` });
+            return res.json({ success: false, message: `扣子报错: ${response.data.msg}` });
         }
 
         console.log("✅ 大模型精算完成，正在返回数据...");
@@ -46,7 +49,7 @@ app.post('/api/diagnose', async (req, res) => {
 
     } catch (error) {
         console.error("❌ 请求报错:", error.response ? error.response.data : error.message);
-        res.status(500).json({ success: false, message: "引擎过载或配置错误，请检查后台。" });
+        res.status(500).json({ success: false, message: "引擎过载或网络通信错误，请检查后台日志。" });
     }
 });
 
