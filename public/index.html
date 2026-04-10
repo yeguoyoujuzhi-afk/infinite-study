@@ -229,7 +229,17 @@
 
                 if(result.success) {
                     // 数据兼容解析，防止大模型返回的格式带有双重包裹
+                    // 【新增防弹衣】：如果后端发来的是个空包，直接拦截并提示
+                    if (!result.data) {
+                        alert("⚠️ 收到来自大模型的空数据！请去 Render 后台检查 COZE_TOKEN 和 WORKFLOW_ID 是否填写正确且无空格。");
+                        return;
+                    }
+                
                     let outputData = result.data;
+                    if (typeof result.data === 'string') {
+                        try { outputData = JSON.parse(result.data); } 
+                        catch (e) { console.log("数据解析正常"); }
+                    }
                     if (typeof result.data === 'string') {
                         try { outputData = JSON.parse(result.data); } 
                         catch (e) { console.log("数据解析正常"); }
