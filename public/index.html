@@ -227,34 +227,36 @@
 
                 const result = await response.json();
 
-                if(result.success) {
-                    // 数据兼容解析，防止大模型返回的格式带有双重包裹
-                    // 【新增防弹衣】：如果后端发来的是个空包，直接拦截并提示
+              if(result.success) {
                     if (!result.data) {
-                        alert("⚠️ 收到来自大模型的空数据！请去 Render 后台检查 COZE_TOKEN 和 WORKFLOW_ID 是否填写正确且无空格。");
+                        alert("⚠️ 收到来自大模型的空数据！");
                         return;
                     }
-                
-                    let outputData = result.data;
-                    if (typeof result.data === 'string') {
-                        try { outputData = JSON.parse(result.data); } 
-                        catch (e) { console.log("数据解析正常"); }
-                    }
-                    if (typeof result.data === 'string') {
-                        try { outputData = JSON.parse(result.data); } 
-                        catch (e) { console.log("数据解析正常"); }
+
+                    // 1. 拆开扣子送来的“大包裹”长文
+                    let outputText = "";
+                    try {
+                        const parsed = JSON.parse(result.data);
+                        outputText = parsed.data || result.data; 
+                    } catch (e) {
+                        outputText = result.data; 
                     }
 
-                    // 根据扣子的输出变量名动态匹配（请确保此处跟你工作流结束节点的变量一致）
-                    const parPdf = outputData.par_pdf || outputData.家长版;
-                    const stuPdf = outputData.stu_pdf || outputData.学生版;
-                    const teaPdf = outputData.tea_pdf || outputData.教师版;
+                    // 2. 开启“正则雷达”，精准扫描长文末尾的 3 个 PDF 网址！
+                    const stuMatch = outputText.match(/\[.*?学生版.*?\]\((https:\/\/[^\)]+)\)/);
+                    const teaMatch = outputText.match(/\[.*?教师版.*?\]\((https:\/\/[^\)]+)\)/);
+                    const parMatch = outputText.match(/\[.*?家长版.*?\]\((https:\/\/[^\)]+)\)/);
 
-                    if(!parPdf) {
-                        alert("⚠️ 引擎运算完毕，但未能提取到有效的 PDF 链接。建议稍后重试。");
-                        console.log("详细数据流回传：", outputData);
+                    // 3. 提取链接
+                    const stuPdf = stuMatch ? stuMatch[1] : null;
+                    const teaPdf = teaMatch ? teaMatch[1] : null;
+                    const parPdf = parMatch ? parMatch[1] : null;
+
+                    if(!parPdf || !stuPdf || !teaPdf) {
+                        alert("⚠️ 引擎运算完毕，但未能提取到有效的 PDF 链接。请按 F12 看控制台。");
+                        console.log("扣子返回的长文原文是：", outputText);
                     } else {
-                        // 赋值下载链接并优雅滑出卡片
+                        // 4. 完美填入按钮，并华丽弹出展示区！
                         document.getElementById('link-par').href = parPdf;
                         document.getElementById('link-stu').href = stuPdf;
                         document.getElementById('link-tea').href = teaPdf;
