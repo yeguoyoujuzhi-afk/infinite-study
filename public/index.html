@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Infinite Study | 多模态诊断工作台</title>
+    <style>
+        :root {
+            --primary-color: #4F46E5;
+            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #e4ebf5 100%);
+            --card-bg: rgba(255, 255, 255, 0.85);
+        }
+        
+        body {
+            margin: 0; padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Segoe UI", Roboto, sans-serif;
+            background: var(--bg-gradient);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            min-height: 100vh;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            color: #333; 
+            overflow-x: hidden;
+        }
+
+        /* 核心分屏容器 */
+        .split-layout {
+            display: flex;
+            width: 90%;
+            max-width: 1400px;
+            gap: 4rem;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        /* ================= 左侧：品牌展示区 ================= */
+        .left-hero {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+        }
+
+        .hero-container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            padding: 4rem 3rem;
+            border-radius: 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.8);
+            width: 100%;
+            max-width: 550px;
+            animation: floatUp 1s ease-out forwards;
+        }
+
+        h1 {
+            font-size: 3.5rem; margin-bottom: 1rem; margin-top: 0;
+            background: linear-gradient(to right, #4F46E5, #ec4899);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            font-weight: 800; letter-spacing: -1px;
+        }
+
+        .subtitle { font-size: 1.15rem; color: #555; line-height: 1.8; margin-bottom: 2.5rem; }
+
+        .features { display: flex; justify-content: center; gap: 1rem; flex-wrap: wrap; }
+
+        .feature-tag {
+            background: white; padding: 0.6rem 1.2rem; border-radius: 50px;
+            font-size: 0.9rem; font-weight: 600; color: var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(79, 70, 229, 0.1);
+        }
+
+        /* ================= 右侧：交互工作台 ================= */
+        .right-workspace {
+            flex: 1.2;
+            display: flex;
+            flex-direction: column;
+            gap: 1.2rem;
+            max-width: 650px;
+            animation: floatUp 1.2s ease-out forwards;
+        }
+
+        .workspace-header h2 {
+            margin: 0 0 0.5rem 0;
+            font-size: 1.8rem;
+            color: #1f2937;
+        }
+        .workspace-header p { margin: 0; color: #6b7280; font-size: 1rem; }
+
+        .input-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            transition: transform 0.2s;
+        }
+        .input-card:hover { transform: translateY(-2px); }
+
+        .input-card h3 { margin: 0 0 1rem 0; font-size: 1.05rem; color: #374151; display: flex; align-items: center; gap: 8px;}
+        
+        .input-card input, .input-card textarea {
+            width: 100%; padding: 0.8rem;
+            border: 1px solid #d1d5db; border-radius: 8px;
+            font-size: 0.95rem; box-sizing: border-box;
+            font-family: inherit; outline: none;
+            transition: border-color 0.2s;
+            background: rgba(255, 255, 255, 0.9);
+        }
+        .input-card input:focus, .input-card textarea:focus { 
+            border-color: var(--primary-color); 
+            box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.1); 
+        }
+        .input-card textarea { resize: vertical; min-height: 70px; }
+
+        .btn-submit {
+            background: linear-gradient(to right, #4F46E5, #6366f1);
+            color: white; border: none; padding: 1.2rem 2rem;
+            font-size: 1.1rem; font-weight: bold; border-radius: 50px;
+            cursor: pointer; width: 100%; margin-top: 0.5rem;
+            box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.3);
+            transition: all 0.3s;
+        }
+        .btn-submit:hover { transform: translateY(-3px); box-shadow: 0 15px 20px -3px rgba(79, 70, 229, 0.4); }
+
+        /* 动画定义 */
+        @keyframes floatUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes gradientBG { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+        
+        /* 结果卡片悬浮效果 */
+        .pdf-btn:hover { filter: brightness(1.1); transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+
+    <div class="split-layout">
+        <div class="left-hero">
+            <div class="hero-container">
+                <h1>Infinite Study</h1>
+                <p class="subtitle">新一代多模态学情诊断引擎。<br>基于 CV 视觉解析与底层精算逻辑，瞬间生成千人千面专属跃迁蓝图。</p>
+                <div class="features">
+                    <span class="feature-tag">📸 错题多模态识别</span>
+                    <span class="feature-tag">🧠 五维精算防呆引擎</span>
+                    <span class="feature-tag">⚡️ 三核智能体并发生成</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="right-workspace">
+            <div class="workspace-header">
+                <h2>导师专属工作台</h2>
+                <p>三维数据极速录入，一键唤醒诊断大脑</p>
+            </div>
+
+            <div class="input-card">
+                <h3>📝 1. 五维问卷数据</h3>
+                <input type="text" id="val_options" placeholder="例：1A 2C 3D 4B 5C 6B..." autocomplete="off">
+            </div>
+
+            <div class="input-card">
+                <h3>🗣️ 2. 前端导师访谈摘要</h3>
+                <textarea id="val_interview" placeholder="记录孩子的性格、畏难情绪、家庭环境表现..."></textarea>
+            </div>
+
+            <div class="input-card">
+                <h3>🎯 3. 错题靶向描述 (手打版)</h3>
+                <textarea id="val_wrong_question" placeholder="如有图片可留空。如有文字描述请在此输入..."></textarea>
+            </div>
+
+            <button class="btn-submit" onclick="generateAndCopy()">🚀 一键打包数据并呼叫大脑</button>
+            
+            <div id="report-showcase" style="display: none; margin-top: 10px; padding: 24px; background: rgba(255,255,255,0.9); border-radius: 16px; border: 1px solid #e2e8f0; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); animation: floatUp 0.5s ease-out forwards;">
+                <h3 style="color: #0f172a; margin-top: 0; font-size: 18px; display: flex; align-items: center; gap: 8px;">
+                    🎉 专属跃迁蓝图生成完毕
+                </h3>
+                <p style="color: #64748b; font-size: 14px; margin-bottom: 20px;">多模态引擎精算成功，请分发以下高管级交付物：</p>
+                
+                <div style="display: flex; gap: 12px;">
+                    <a id="link-par" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #4F46E5, #6366f1); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.3);">👪 家长版蓝图</a>
+                    
+                    <a id="link-stu" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #10B981, #34d399); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 6px rgba(16, 185, 129, 0.3);">🧑‍🎓 学生版指南</a>
+                    
+                    <a id="link-tea" href="#" target="_blank" class="pdf-btn" style="flex: 1; text-align: center; padding: 12px; background: linear-gradient(135deg, #F59E0B, #fbbf24); color: white; text-decoration: none; border-radius: 10px; font-weight: bold; transition: all 0.2s; box-shadow: 0 4px 6px rgba(245, 158, 11, 0.3);">👨‍🏫 教师版 SOP</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function generateAndCopy() {
+            const options = document.getElementById('val_options').value.trim();
+            const interview = document.getElementById('val_interview').value.trim();
+            const wrongQuestion = document.getElementById('val_wrong_question').value.trim();
+
+            if(!options && !interview && !wrongQuestion) {
+                alert("⚠️ 请至少输入一项学情数据！");
+                return;
+            }
+
+            const btn = document.querySelector('.btn-submit');
+            const showcase = document.getElementById('report-showcase');
+            const originalText = btn.innerText;
+            
+            // 改变按钮状态为加载中，同时隐藏之前的卡片
+            btn.innerText = "⏳ 引擎全功率运转中 (约需15-30秒)...";
+            btn.disabled = true;
+            btn.style.opacity = "0.7";
+            showcase.style.display = "none";
+
+            try {
+                // 注意：这里的 URL 已经改为了根目录请求。
+                // 只要你把它放到 public 文件夹上传到 Glitch，它就会自动去请求同域名下的后端 API。
+                const response = await fetch('/api/diagnose', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        options: options, 
+                        interview: interview, 
+                        wrong_question: wrongQuestion 
+                    })
+                });
+
+                const result = await response.json();
+
+                if(result.success) {
+                    // 数据兼容解析，防止大模型返回的格式带有双重包裹
+                    let outputData = result.data;
+                    if (typeof result.data === 'string') {
+                        try { outputData = JSON.parse(result.data); } 
+                        catch (e) { console.log("数据解析正常"); }
+                    }
+
+                    // 根据扣子的输出变量名动态匹配（请确保此处跟你工作流结束节点的变量一致）
+                    const parPdf = outputData.par_pdf || outputData.家长版;
+                    const stuPdf = outputData.stu_pdf || outputData.学生版;
+                    const teaPdf = outputData.tea_pdf || outputData.教师版;
+
+                    if(!parPdf) {
+                        alert("⚠️ 引擎运算完毕，但未能提取到有效的 PDF 链接。建议稍后重试。");
+                        console.log("详细数据流回传：", outputData);
+                    } else {
+                        // 赋值下载链接并优雅滑出卡片
+                        document.getElementById('link-par').href = parPdf;
+                        document.getElementById('link-stu').href = stuPdf;
+                        document.getElementById('link-tea').href = teaPdf;
+                        showcase.style.display = "block";
+                    }
+                } else {
+                    alert("❌ 运算失败：" + result.message);
+                }
+
+            } catch (error) {
+                console.error("前端错误捕获：", error);
+                alert("⚠️ 网络通信中断，请检查服务器连接。");
+            } finally {
+                // 恢复按钮的原始状态
+                btn.innerText = originalText;
+                btn.disabled = false;
+                btn.style.opacity = "1";
+            }
+        }
+    </script>
+</body>
+</html>
