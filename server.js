@@ -24,7 +24,7 @@ app.post('/api/diagnose', async (req, res) => {
                 bot_id: "7624357703825440795",
                 parameters: {
                     options: options || "",
-                    interview: interview || "",
+                    interview_summary: interview || "", // ✅ 名字完全对齐扣子
                     wrong_question: wrong_question || ""
                 }
             },
